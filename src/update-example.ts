@@ -1,7 +1,6 @@
-import {SolidClient, QueryContext} from "solid-aggregator-client";
+import {SolidClient, QueryContext, RDFResource} from "solid-aggregator-client";
 import chalk from "chalk";
 import {allPods} from "./allpods";
-import {RDFResource} from "../src/classes/RDFResource";
 import fetch from "cross-fetch";
 import {DataFactory, Quad} from "n3";
 import blankNode = DataFactory.blankNode;
@@ -16,7 +15,7 @@ const solidClient = new SolidClient(
   "http://localhost:3000/pods/00000000000000000933/",
   fetch,
   "http://localhost:3001",
-  "fatal"
+  "debug"
 );
 
 const queryString = `
@@ -83,17 +82,22 @@ async function doClientQuery() {
   });
 }
 
-doAggregatedQuery();
+//doAggregatedQuery();
 doClientQuery();
 
 async function changeStuff() {
-  let resource = new RDFResource('http://localhost:3000/pods/00000000000000000933/profile/card');
+  let resource = new RDFResource('http://localhost:3000/pods/00000000000000000933/profile/card#me');
 
   await solidClient.getResource(resource);
 
   const pod = allPods[Math.floor(Math.random()*allPods.length)];
   const bn = blankNode();
-  if (resource.data instanceof N3.Store){
+
+  if (!resource.data){
+    throw new Error("Couldn't resolve URL")
+  }
+
+  if (typeof resource.data !== "string"){
     resource.data.add(
       new Quad(
         bn,
@@ -115,12 +119,12 @@ async function changeStuff() {
         bn
       )
     );
+
+    await solidClient.makeResource(resource);
   }
 
-  await solidClient.makeResource(resource);
-
-  setTimeout(changeStuff, 5000);
-  setTimeout(() => {changeStuffBack(pod)}, 3000);
+  setTimeout(changeStuff, 10000);
+  setTimeout(() => {changeStuffBack(pod)}, 5000);
 }
 
 async function changeStuffBack(pod: string) {
@@ -128,7 +132,11 @@ async function changeStuffBack(pod: string) {
 
   await solidClient.getResource(resource);
 
-  if (resource.data instanceof N3.Store){
+  if (!resource.data){
+    throw new Error("Couldn't resolve URL")
+  }
+
+  if (typeof resource.data !== "string"){
     const hasPerson = resource.data.getQuads(null, namedNode("http://localhost:3000/www.ldbc.eu/ldbc_socialnet/1.0/vocabulary/hasPerson"), namedNode(pod), new N3.DefaultGraph);
     resource.data.delete(hasPerson[0]);
 

@@ -1,12 +1,17 @@
 *.js
 package-lock.json
+
 #SolidBench
+SolidBenchServerData
 
 # -- custom: --
 bin/
 log/
 .idea/
 static/
+main.ts
+main.js
+componentsjs-error-state.json
 
 # -- predefied: --
 

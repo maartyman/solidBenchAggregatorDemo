@@ -6,30 +6,34 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npx tsc && node ./main.js",
-    "start init": "npx tsc && node ./init.js",
-    "start simple-query": "npx tsc && node ./simple-query.js",
-    "start complex-query": "npx tsc && node ./complex-query.js",
-    "start link-traversal-query": "npx tsc && node ./link-traversal-query.js",
+    "start setupAndStartServers": "npx tsc && node src/setupAndStartServers.js",
+    "start simple-query": "npx tsc && node src/simple-query.js",
+    "start complex-query": "npx tsc && node src/complex-query.js",
+    "start link-traversal-query": "npx tsc && node src/link-traversal-query.js",
     "start reasoning-query": "npx tsc && node ./reasoning-query.js",
-    "start update-example": "npx tsc && node ./update-example.js",
+    "start update-example": "npx tsc && node src/update-example.js",
     "run register-queries": "node ./register-queries.js",
-    "run simple-query": "node ./simple-query.js",
-    "run complex-query": "node ./complex-query.js",
-    "run link-traversal-query": "node ./link-traversal-query.js",
+    "run simple-query": "node src/simple-query.js",
+    "run complex-query": "node src/complex-query.js",
+    "run link-traversal-query": "node src/link-traversal-query.js",
     "run reasoning-query": "node ./reasoning-query.js",
-    "run update-example": "node ./update-example.js"
+    "run update-example": "node src/update-example.js"
   },
   "author": "Maarten Vandenbrande",
   "license": "MIT",
   "devDependencies": {
+    "@types/decompress": "^4.2.4",
     "typescript": "^4.7.4",
-    "why-is-node-running": "^2.2.2"
+    "why-is-node-running": "^2.2.2",
+    "solid-aggregator-client": "file:../solid-aggregator-client",
+    "solid-aggregator-server": "file:../solid-aggregator-server"
   },
   "dependencies": {
-    "@types/decompress": "^4.2.4",
+    "@solid/community-server": "^5.1.0",
     "chalk": "^4.1.2",
     "cross-fetch": "^3.1.5",
     "decompress": "^4.2.1",
-    "solid-aggregator-client": "file:../"
+    "solid-aggregator-client": "^1.0.3",
+    "solid-aggregator-server": "^1.0.5"
   }
 }

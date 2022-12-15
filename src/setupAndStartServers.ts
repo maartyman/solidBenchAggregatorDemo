@@ -1,30 +1,58 @@
-import {QueryContext} from "../src/utils/queryContext";
-import {SolidClient} from "../src/classes/SolidClient";
 import fetch from "cross-fetch";
-import {TComunicaContext, TComunicaVersion} from "../src/queryExecutorPackage/queryExecutor/queryExplanation";
 import decompress from "decompress";
+import fs from "fs";
+import {AppRunner} from "@solid/community-server";
+import {QueryContext, SolidClient, TComunicaContext, TComunicaVersion} from "solid-aggregator-client";
+import {AppRunner as AggAppRunner} from "solid-aggregator-server";
 
-async function setupCSSServer() {
-  console.log("Decompressing data. This might take a while!");
-
-  decompress("./SolidBenchServerData.zip", "SolidBenchServerData").then(() => {
+async function setupAndStartCSS() {
+  if(!fs.existsSync("./SolidBenchServerData")) {
+    console.log("Decompressing data. This might take a while!");
+    await decompress("./SolidBenchServerData.zip", "SolidBenchServerData");
     console.log("Decompressing finished!");
-  });
+  }
+  else {
+    console.log("Decompressing already done, continuing!");
+  }
 
+  console.log("Starting CSS.");
 
+  const loaderProperties = {
+    mainModulePath: process.cwd() + "/node_modules/@solid/community-server/",
+    dumpErrorState: true,
+    typeChecking: false,
+  };
+
+  const configs = process.cwd() + "/cssConfig.json";
+
+  await (new AppRunner()).run(
+    loaderProperties,
+    configs,
+    {
+      'urn:solid-server:default:variable:rootFilePath': process.cwd() + '/SolidBenchServerData'
+    },
+    {
+      "loggingLevel": "warn"
+    }
+  );
+
+  console.log("CSS started.");
+
+  setupAndStartAggregatorServer();
 }
 
-async function setupAggregatorServer() {
-  console.log("Initializing Aggregator server.");
+async function setupAndStartAggregatorServer() {
+  console.log("Starting Aggregator server.");
 
+  AggAppRunner.runApp("warn");
 
-
+  console.log("Aggregator server started.");
 
   const solidClient = new SolidClient(
     "http://localhost:3000/pods/00000000000000000933/",
     fetch,
     "http://localhost:3001",
-    "fatal"
+    "warn"
   );
 
   async function makeAggregatedQuery(
@@ -41,7 +69,13 @@ async function setupAggregatorServer() {
       comunicaContext: comunicaContext
     };
 
-    await solidClient.makeQuery(queryContext);
+    let query = solidClient.makeQuery(queryContext);
+
+    await new Promise<void>((resolve, reject) => {
+      query.subscribeOnReady(() => {
+        resolve();
+      });
+    })
   }
 
 //simple and update
@@ -57,7 +91,7 @@ SELECT ?friend WHERE {
   let sources: [string, ...string[]] = ["http://localhost:3000/pods/00000000000000000933/profile/card"];
 
   console.log("Adding simple query.");
-  makeAggregatedQuery(queryString, sources).then(() => {
+  await makeAggregatedQuery(queryString, sources).then(() => {
     console.log("Simple query added.");
   });
 
@@ -111,10 +145,9 @@ LIMIT 20
   ];
 
   console.log("Adding complex query.");
-  makeAggregatedQuery(queryString, sources).then(() => {
+  await makeAggregatedQuery(queryString, sources).then(() => {
     console.log("Complex query added.");
   });
-
 //link-traversal
   queryString = `
 PREFIX ldp: <http://www.w3.org/ns/ldp#>
@@ -134,8 +167,9 @@ SELECT DISTINCT ?content ?forumName WHERE {
   sources = ["http://localhost:3000/pods/00000000000000000933/"];
 
   console.log("Adding link-traversal query.");
-  makeAggregatedQuery(queryString, sources,"link-traversal","link-traversal-follow-match-query").then(() => {
-    console.log("Link-traversal query added.");
-  });
+  await makeAggregatedQuery(queryString, sources,"link-traversal","link-traversal-follow-match-query")
+  console.log("Link-traversal query added.");
+  console.log("Everything is setup and ready for the demo!");
 }
 
+setupAndStartCSS();

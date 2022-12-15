@@ -40,7 +40,7 @@ async function doAggregatedQuery() {
 
   let query = solidClient.makeQuery(queryContext);
 
-  //await query.getBindings();
+  await query.queryReadyPromise();
 
   const timeMake = performance.now();
   query.getBindings().then((bindings) => {
@@ -69,7 +69,7 @@ async function doClientQuery() {
 
   let query = solidClient.makeQuery(queryContext);
 
-  await query.getBindings();
+  await query.queryReadyPromise();
 
   const timeMake = performance.now();
   await query.getBindings().then((bindings) => {

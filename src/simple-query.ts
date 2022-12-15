@@ -9,7 +9,7 @@ const solidClient = new SolidClient(
   "http://localhost:3000/pods/00000000000000000933/",
   fetch,
   "http://localhost:3001",
-  "fatal"
+  "warn"
 );
 
 const queryString = `
@@ -32,7 +32,7 @@ async function doAggregatedQuery() {
 
   let query = solidClient.makeQuery(queryContext);
 
-  await query.getBindings();
+  await query.queryReadyPromise();
 
   const timeMake = performance.now();
   query.getBindings().then((bindings) => {
@@ -59,7 +59,7 @@ async function doClientQuery() {
 
   let query = solidClient.makeQuery(queryContext);
 
-  await query.getBindings();
+  await query.queryReadyPromise();
 
   const timeMake = performance.now();
   query.getBindings().then((bindings) => {
