@@ -8,6 +8,8 @@ import N3 from "n3";
 import literal = DataFactory.literal;
 import namedNode = DataFactory.namedNode;
 
+let changedTime = 0;
+
 console.log(chalk.blue("Aggregated"));
 console.log(chalk.green("Client"));
 
@@ -15,7 +17,7 @@ const solidClient = new SolidClient(
   "http://localhost:3000/pods/00000000000000000933/",
   fetch,
   "http://localhost:3001",
-  "debug"
+  "warn"
 );
 
 const queryString = `
@@ -40,13 +42,13 @@ async function doAggregatedQuery() {
 
   query.streamBindings((bindings, addition) => {
     if (addition) {
-      console.log(chalk.blue("added bindings: "));
+      console.log(chalk.blue("added bindings: (" + ((performance.now() - changedTime)/1000).toLocaleString(undefined,{minimumFractionDigits: 3}) + "s)"));
       bindings.forEach((value, key) => {
         console.log(chalk.blue("\t" + key.value.toString() + ": " + value.value.toString()));
       });
     }
     else {
-      console.log(chalk.blue("removed bindings: "));
+      console.log(chalk.blue("removed bindings: (" + ((performance.now() - changedTime)/1000).toLocaleString(undefined,{minimumFractionDigits: 3}) + "s)"));
       bindings.forEach((value, key) => {
         console.log(chalk.blue("\t" + key.value.toString() + ": " + value.value.toString()));
       });
@@ -68,13 +70,13 @@ async function doClientQuery() {
 
   query.streamBindings((bindings, addition) => {
     if (addition) {
-      console.log(chalk.green("added bindings: "));
+      console.log(chalk.green("added bindings: (" + ((performance.now() - changedTime)/1000).toLocaleString(undefined,{minimumFractionDigits: 3}) + "s)"));
       bindings.forEach((value, key) => {
         console.log(chalk.green("\t" + key.value.toString() + ": " + value.value.toString()));
       });
     }
     else {
-      console.log(chalk.green("removed bindings: "));
+      console.log(chalk.green("removed bindings: (" + ((performance.now() - changedTime)/1000).toLocaleString(undefined,{minimumFractionDigits: 3}) + "s)"));
       bindings.forEach((value, key) => {
         console.log(chalk.green("\t" + key.value.toString() + ": " + value.value.toString()));
       });
@@ -82,7 +84,7 @@ async function doClientQuery() {
   });
 }
 
-//doAggregatedQuery();
+doAggregatedQuery();
 doClientQuery();
 
 async function changeStuff() {
@@ -120,11 +122,13 @@ async function changeStuff() {
       )
     );
 
+    console.log("Adding a new friend:", pod);
     await solidClient.makeResource(resource);
+    changedTime = performance.now();
   }
 
-  setTimeout(changeStuff, 10000);
-  setTimeout(() => {changeStuffBack(pod)}, 5000);
+  setTimeout(changeStuff, 2000);
+  setTimeout(() => {changeStuffBack(pod)}, 1000);
 }
 
 async function changeStuffBack(pod: string) {
@@ -147,7 +151,9 @@ async function changeStuffBack(pod: string) {
     resource.data.delete(knows[0]);
   }
 
+  console.log("Removing friend:", pod);
   await solidClient.makeResource(resource);
+  changedTime = performance.now();
 }
 
-setTimeout(changeStuff, 5000);
+setTimeout(changeStuff, 10000);
