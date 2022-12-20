@@ -116,7 +116,8 @@ SELECT ?fr (MIN(?distInner) AS ?dist) WHERE {
   }
   UNION
   { 
-    <http://localhost:3000/pods/00000000000000000933/profile/card#me> (((snvoc:knows/snvoc:hasPerson)|^(snvoc:knows/snvoc:hasPerson))/((snvoc:knows/snvoc:hasPerson)|^(snvoc:knows/snvoc:hasPerson))/((snvoc:knows/snvoc:hasPerson)|^(snvoc:knows/snvoc:hasPerson))) ?fr. 
+    <http://localhost:3000/pods/00000000000000000102/profile/card#me> (((snvoc:knows/snvoc:hasPerson)|^(snvoc:knows/snvoc:hasPerson))/((snvoc:knows/snvoc:hasPerson)|^(snvoc:knows/snvoc:hasPerson))/((snvoc:knows/snvoc:hasPerson)|^(snvoc:knows/snvoc:hasPerson))) ?fr. 
+    BIND(3  AS ?distTwoInner)
   }
   ?fr snvoc:id ?frId.
   FILTER(?frId != ?rootId)
@@ -124,7 +125,6 @@ SELECT ?fr (MIN(?distInner) AS ?dist) WHERE {
 }
 GROUP BY ?fr
 ORDER BY ASC(?dist)
-LIMIT 20
 `;
 
   sources = [
