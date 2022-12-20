@@ -11,7 +11,7 @@
     "start complex-query": "npx tsc && node src/complex-query.js",
     "start link-traversal-query": "npx tsc && node src/link-traversal-query.js",
     "start update-example": "npx tsc && node src/update-example.js",
-    "setupAndStartServers": "node ./setupAndStartServers.js",
+    "setupAndStartServers": "node src/setupAndStartServers.js",
     "simple-query": "node src/simple-query.js",
     "complex-query": "node src/complex-query.js",
     "link-traversal-query": "node src/link-traversal-query.js",
