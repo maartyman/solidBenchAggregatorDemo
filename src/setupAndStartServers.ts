@@ -8,7 +8,7 @@ import {AppRunner as AggAppRunner} from "solid-aggregator-server";
 async function setupAndStartCSS() {
   if(!fs.existsSync("./SolidBenchServerData")) {
     console.log("Decompressing data. This might take a while!");
-    await decompress("./SolidBenchServerData.zip", "SolidBenchServerData");
+    await decompress("SolidBenchServerData.zip", "SolidBenchServerData");
     console.log("Decompressing finished!");
   }
   else {

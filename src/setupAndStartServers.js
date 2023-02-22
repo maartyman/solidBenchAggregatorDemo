@@ -22,7 +22,7 @@ function setupAndStartCSS() {
     return __awaiter(this, void 0, void 0, function* () {
         if (!fs_1.default.existsSync("./SolidBenchServerData")) {
             console.log("Decompressing data. This might take a while!");
-            yield (0, decompress_1.default)("./SolidBenchServerData.zip", "SolidBenchServerData");
+            yield (0, decompress_1.default)("SolidBenchServerData.zip", "SolidBenchServerData");
             console.log("Decompressing finished!");
         }
         else {

@@ -22,14 +22,16 @@
   "devDependencies": {
     "@types/decompress": "^4.2.4",
     "typescript": "^4.7.4",
-    "why-is-node-running": "^2.2.2"
+    "why-is-node-running": "^2.2.2",
+    "solid-aggregator-client": "file:../solid-aggregator-client",
+    "solid-aggregator-server": "file:../solid-aggregator-server"
   },
   "dependencies": {
     "@solid/community-server": "^5.1.0",
     "chalk": "^4.1.2",
     "cross-fetch": "^3.1.5",
     "decompress": "^4.2.1",
-    "solid-aggregator-client": "^1.0.3",
-    "solid-aggregator-server": "^1.0.5"
+    "solid-aggregator-client": "^1.0.5",
+    "solid-aggregator-server": "^1.0.7"
   }
 }
